@@ -394,7 +394,9 @@ impl<'a> MethodGen<'a> {
                 self.const_method_name()
             ),
             "});",
-            |w| { w.write_line(&format!("instance.{}(ctx, req, resp)", self.name())); },
+            |w| {
+                w.write_line(&format!("instance.{}(ctx, req, resp)", self.name()));
+            },
         );
     }
 }
@@ -464,14 +466,18 @@ impl<'a> ServiceGen<'a> {
             w.pub_fn(
                 "spawn<F>(&self, f: F) where F: ::futures::Future<Item = (), \
                  Error = ()> + Send + 'static",
-                |w| { w.write_line("self.client.spawn(f)"); },
+                |w| {
+                    w.write_line("self.client.spawn(f)");
+                },
             )
         });
     }
 
     fn write_server(&self, w: &mut CodeWriter) {
-        w.pub_trait(&self.service_name(), |w| for method in &self.methods {
-            method.write_service(w);
+        w.pub_trait(&self.service_name(), |w| {
+            for method in &self.methods {
+                method.write_service(w);
+            }
         });
 
         w.write_line("");
@@ -519,7 +525,7 @@ fn gen_file(
         return None;
     }
 
-    let base = protobuf::descriptorx::proto_path_to_rust_mod(file.get_name());
+    let base = protobuf::descriptorx::proto_path_to_output_path(file.get_name());
 
     let mut v = Vec::new();
     {
